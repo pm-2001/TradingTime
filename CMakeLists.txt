@@ -15,3 +15,5 @@ add_executable(DeribitTrading ${SOURCES})
 # Link required libraries
 find_package(CURL REQUIRED)
 target_link_libraries(DeribitTrading PRIVATE CURL::libcurl)
+# file(GLOB SOURCES "src/*.cpp")
+# add_executable(DeribitTrading ${SOURCES})

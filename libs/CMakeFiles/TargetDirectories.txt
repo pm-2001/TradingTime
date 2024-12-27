@@ -1,0 +1,3 @@
+/mnt/c/Users/pm020/Documents/DeribitTrading/libs/CMakeFiles/DeribitTrading.dir
+/mnt/c/Users/pm020/Documents/DeribitTrading/libs/CMakeFiles/edit_cache.dir
+/mnt/c/Users/pm020/Documents/DeribitTrading/libs/CMakeFiles/rebuild_cache.dir

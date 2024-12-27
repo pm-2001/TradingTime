@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/DeribitTrading.dir/src/deribit_api.cpp.o CMakeFiles/DeribitTrading.dir/src/main.cpp.o CMakeFiles/DeribitTrading.dir/src/websocket_server.cpp.o -o DeribitTrading  /usr/lib/x86_64-linux-gnu/libcurl.so 

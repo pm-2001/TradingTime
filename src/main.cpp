@@ -1,21 +1,27 @@
+#include "deribit_api.h"
 #include <iostream>
-#include <curl/curl.h>
+using namespace std;
+
+string getEnvVar(const string& varName) {
+    const char* value = getenv(varName.c_str());
+    if (!value) {
+        throw runtime_error(varName + " environment variable not set");
+    }
+    return string(value);
+}
 
 int main() {
-    CURL *curl;
-    CURLcode res;
+    string clientId = getEnvVar("CLIENT_ID");
+    string clientSecret = getEnvVar("CLIENT_SECRET");
+    DeribitAPI api(clientId, clientSecret);
 
-    curl = curl_easy_init();
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, "https://api.github.com");
-        res = curl_easy_perform(curl);
-
-        if (res != CURLE_OK)
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-
-        curl_easy_cleanup(curl);
+    if (!api.authenticate()) {
+        cerr << "Failed to authenticate" << endl;
+        return 1;
     }
 
-    std::cout << "HTTP request complete!" << std::endl;
+    string orderBook = api.getOrderBook("BTC-PERPETUAL");
+    cout << "Order Book: " << orderBook << endl;
+
     return 0;
 }
