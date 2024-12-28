@@ -4,7 +4,7 @@ project(DeribitTrading)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
-include_directories(${CMAKE_SOURCE_DIR}/libs/websocket)
+include_directories(${CMAKE_SOURCE_DIR}/libs/websocketpp)
 
 file(GLOB SOURCES "src/*.cpp")
 
