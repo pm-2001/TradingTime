@@ -19,7 +19,9 @@ public:
 
     bool authenticate();
     string getOrderBook(const string &symbol);
-
+    string getInstruments(const string &currency, const string &kind = "future");
+    string getAccountSummary(const string &currency);
+    string getTicker(const string &symbol);
 };
 
 #endif
