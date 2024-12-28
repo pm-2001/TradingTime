@@ -32,7 +32,6 @@
  #include <websocketpp/transport/asio/endpoint.hpp>
  #include <websocketpp/transport/asio/security/tls.hpp>
   
- // Pull in non-tls config
  #include <websocketpp/config/asio_no_tls_client.hpp>
   
  // Define TLS config
