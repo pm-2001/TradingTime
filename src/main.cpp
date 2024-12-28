@@ -120,7 +120,7 @@ int main() {
     // }
     // cout<< "Modify Order: " << modifyOrder << endl;
 
-    // api.startWebSocket("BTC-PERPETUAL");
+    api.startWebSocket("BTC-PERPETUAL");
 
 
 

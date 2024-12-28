@@ -2,11 +2,6 @@
 #include <iostream>
 #include <sstream>
 #include "json.hpp"
-#include <websocketpp/config/asio_client.hpp>
-#include <websocketpp/config/asio_tls_client.hpp>
-#include <websocketpp/client.hpp>
-
-typedef websocketpp::client<websocketpp::config::asio_tls_client> WebSocketClient;
 
 using json = nlohmann::json;
 using namespace std;
