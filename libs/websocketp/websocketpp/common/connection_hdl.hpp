@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Peter Thorson. All rights reserved.
+ * Copyright (c) 2014, Peter Thorson. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,37 +25,28 @@
  *
  */
 
-#ifndef WEBSOCKETPP_VERSION_HPP
-#define WEBSOCKETPP_VERSION_HPP
+#ifndef WEBSOCKETPP_COMMON_CONNECTION_HDL_HPP
+#define WEBSOCKETPP_COMMON_CONNECTION_HDL_HPP
 
-/// Namespace for the WebSocket++ project
+#include <websocketpp/common/memory.hpp>
+
 namespace websocketpp {
 
-/*
- other places where version information is kept
- - readme.md
- - changelog.md
- - Doxyfile
- - CMakeLists.txt
-*/
-
-/// Library major version number
-static int const major_version = 0;
-/// Library minor version number
-static int const minor_version = 8;
-/// Library patch version number
-static int const patch_version = 2;
-/// Library pre-release flag
+/// A handle to uniquely identify a connection.
 /**
- * This is a textual flag indicating the type and number for pre-release
- * versions (dev, alpha, beta, rc). This will be blank for release versions.
+ * This type uniquely identifies a connection. It is implemented as a weak
+ * pointer to the connection in question. This provides uniqueness across
+ * multiple endpoints and ensures that IDs never conflict or run out.
+ *
+ * It is safe to make copies of this handle, store those copies in containers,
+ * and use them from other threads.
+ *
+ * This handle can be upgraded to a full shared_ptr using
+ * `endpoint::get_con_from_hdl()` from within a handler fired by the connection
+ * that owns the handler.
  */
-
-static char const prerelease_flag[] = "";
-
-/// Default user agent string
-static char const user_agent[] = "WebSocket++/0.8.2";
+typedef lib::weak_ptr<void> connection_hdl;
 
 } // namespace websocketpp
 
-#endif // WEBSOCKETPP_VERSION_HPP
+#endif // WEBSOCKETPP_COMMON_CONNECTION_HDL_HPP
