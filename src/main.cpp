@@ -38,18 +38,18 @@ int main() {
     // }
     
 
-    // string accountSummary = api.getAccountSummary("BTC");
-    // if (accountSummary.empty()) {
-    //     cerr << "Failed to fetch account summary." << endl;
-    //     return 1;
-    // }
-    // auto jsonResponseAccountSummary = json::parse(accountSummary);
-    // if (jsonResponseAccountSummary.contains("result")) {
-    //     auto result = jsonResponseAccountSummary["result"];
-    //     cout << "Balance: " << result["balance"] << endl;
-    //     cout << "Equity: " << result["equity"] << endl;
-    //     cout << "Available Funds: " << result["available_funds"] << endl;
-    // }
+    string accountSummary = api.getAccountSummary("BTC");
+    if (accountSummary.empty()) {
+        cerr << "Failed to fetch account summary." << endl;
+        return 1;
+    }
+    auto jsonResponseAccountSummary = json::parse(accountSummary);
+    if (jsonResponseAccountSummary.contains("result")) {
+        auto result = jsonResponseAccountSummary["result"];
+        cout << "Balance: " << result["balance"] << endl;
+        cout << "Equity: " << result["equity"] << endl;
+        cout << "Available Funds: " << result["available_funds"] << endl;
+    }
 
     // string ticker = api.getTicker("BTC-PERPETUAL");
     // if (ticker.empty()) {
