@@ -43,17 +43,17 @@ void handlePlaceOrder(DeribitAPI &api)
     if (jsonResponse.contains("result") && jsonResponse["result"].contains("order"))
     {
         string orderState = jsonResponse["result"]["order"]["order_state"];
-        if (orderState == "open")
-            cout << "\t--------Order Placed Succesfully--------" << endl;
+        if (orderState == "open"){
+            cout<<endl;
+                cout << "\t\t--------Order Placed Succesfully--------" << endl;
+        }
         else
-            cout << "\t--------Order not placed--------" << endl;
+            cout << "\t\t--------Order not placed--------" << endl;
     }
-    else if (jsonResponse.contains("error"))
-        cout << "\tError placing order." << endl
-             << "Message: " << jsonResponse["error"]["message"] << endl;
-    else
-        cerr << "\tInvalid JSON response or missing 'order_state' field." << endl;
-    cout << "--------------------------------------------------------------------------" << endl;
+    else if (jsonResponse.contains("error")) cout << "\t\tError placing order." << endl<< "Message: " << jsonResponse["error"]["message"] << endl;
+    else cerr << "\t\tInvalid JSON response or missing 'order_state' field." << endl;
+
+    cout<<"--------------------------------------------------------------------------" << endl;
 }
 
 void handleOpenOrder(DeribitAPI &api)
@@ -99,13 +99,13 @@ void handleCancelOrder(DeribitAPI &api)
     {
         string orderState = parsedJson["result"]["order_state"];
         if (orderState == "cancelled")
-            cout << "\tOrder cancelled successfully." << endl;
+            cout <<"\t\t"<<string(10,'-')<< "Order cancelled successfully." <<string(10,'-')<< endl;
         else
             cout << "\tOrder not cancelled." << endl;
     }
     else
         cerr << "\tInvalid JSON response or missing 'order_state' field." << endl;
-    cout<<string(91,'-')<<endl;
+    cout<<string(92,'-')<<endl;
 }
 
 void handleModifyOrder(DeribitAPI &api)
