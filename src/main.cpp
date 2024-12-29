@@ -171,8 +171,9 @@ void handleAccountSummary(DeribitAPI &api)
          << "+" << setw(20) << "-" << "+" << endl;
 
     // Table Content
-    cout << "|" << setw(22-result["currency"].size()) << setfill(' ') << left << result["currency"]
-         << "|" << setw(14) << left << result["balance"]
+    int cl = 20 - result["balance"].size();
+    cout << "|" << setw(18) << setfill(' ') << left << result["currency"]
+         << "|" << setw(cl) << left << result["balance"]
          << "|" << setw(14) << left << result["equity"]
          << "|" << setw(19) << left << result["available_funds"] << "|" << endl;
 
