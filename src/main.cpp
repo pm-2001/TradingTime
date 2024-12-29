@@ -15,6 +15,8 @@ string getEnvVar(const string& varName) {
 int main() {
     string clientId = getEnvVar("CLIENT_ID");
     string clientSecret = getEnvVar("CLIENT_SECRET");
+    cout<< "Client ID: " << clientId << endl;
+    cout<< "Client Secret: " << clientSecret << endl;
     DeribitAPI api(clientId, clientSecret);
 
     if (!api.authenticate()) {
@@ -67,24 +69,24 @@ int main() {
     //     cout << "Best Bid Price: " << result["best_bid_price"] << endl;
     // }
 
-    // string placeOrder = api.placeOrder("BTC-PERPETUAL", "buy", 10, 5000, "limit");
-    // if (placeOrder.empty()) {
-    //     cerr << "Failed to place order." << endl;
-    //     return 1;
-    // }
-    // auto jsonResponsePlaceOrder = json::parse(placeOrder);
+    string placeOrder = api.placeOrder("BTC-PERPETUAL", "buy", 10, 5000, "limit");
+    if (placeOrder.empty()) {
+        cerr << "Failed to place order." << endl;
+        return 1;
+    }
+    auto jsonResponsePlaceOrder = json::parse(placeOrder);
 
-    // if(jsonResponsePlaceOrder.contains("result")){
-    //     auto result = jsonResponsePlaceOrder["result"];
-    //     cout<< "Order ID: " << result["order"]["order_id"] << endl;
-    //     cout<< "Instrument Name: " << result["order"]["instrument_name"] << endl;
-    //     cout<< "Amount: " << result["order"]["amount"] << endl;
-    //     cout<< "Price: " << result["order"]["price"] << endl;
-    //     cout<< "Type: " << result["order"]["order_type"] << endl;
-    // } 
-    // else if(jsonResponsePlaceOrder.contains("error")){
-    //     cout<< "Error: " << jsonResponsePlaceOrder["error"]["message"] << endl;
-    // }
+    if(jsonResponsePlaceOrder.contains("result")){
+        auto result = jsonResponsePlaceOrder["result"];
+        cout<< "Order ID: " << result["order"]["order_id"] << endl;
+        cout<< "Instrument Name: " << result["order"]["instrument_name"] << endl;
+        cout<< "Amount: " << result["order"]["amount"] << endl;
+        cout<< "Price: " << result["order"]["price"] << endl;
+        cout<< "Type: " << result["order"]["order_type"] << endl;
+    } 
+    else if(jsonResponsePlaceOrder.contains("error")){
+        cout<< "Error: " << jsonResponsePlaceOrder["error"]["message"] << endl;
+    }
 
     string openOrders = api.getOpenOrders();
     if (openOrders.empty()) {
@@ -120,7 +122,7 @@ int main() {
     // }
     // cout<< "Modify Order: " << modifyOrder << endl;
 
-    api.startWebSocket("BTC-PERPETUAL");
+    api.startWebSocket({"BTC-PERPETUAL","ETH-PERPETUAL"});
 
 
 

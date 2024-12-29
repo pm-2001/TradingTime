@@ -3,7 +3,12 @@
 
 #include <string>
 #include <curl/curl.h>
+#include <websocketpp/config/asio_client.hpp>
+#include <websocketpp/config/asio_tls_client.hpp>
+#include <websocketpp/client.hpp>
+#include <vector>
 using namespace std;
+typedef websocketpp::client<websocketpp::config::asio_tls_client> WebSocketClient;
 
 class DeribitAPI {
     private:
@@ -26,7 +31,9 @@ class DeribitAPI {
     string getOpenOrders();
     string cancelOrder(const string &orderId);
     string modifyOrder(const string &orderId, double newPrice, double newAmount);
-    void startWebSocket(const string &symbol);
+    // void startWebSocket(const string &symbol);
+    void startWebSocket(const vector<string> &symbols);
+    // void reconnect_websocket(WebSocketClient &ws_client, websocketpp::connection_hdl hdl);
 
 };
 
