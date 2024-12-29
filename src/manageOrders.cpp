@@ -6,9 +6,11 @@
 using json = nlohmann::json;
 using namespace std;
 
-string DeribitAPI::placeOrder(const string &instrument_name, const string &side, double amount, double price, const string &type) {
+string DeribitAPI::placeOrder(const string &instrument_name, const string &side, double amount, double price, const string &type)
+{
     CURL *curl = curl_easy_init();
-    if (!curl) return "";
+    if (!curl)
+        return "";
 
     string url = base_url + "private/" + side; // "private/buy" or "private/sell"
     string response;
@@ -16,13 +18,7 @@ string DeribitAPI::placeOrder(const string &instrument_name, const string &side,
         {"jsonrpc", "2.0"},
         {"id", 42},
         {"method", "private/" + side},
-        {"params", {
-            {"instrument_name", instrument_name},
-            {"amount", amount},
-            {"price", price},
-            {"type", type}
-        }}
-    };
+        {"params", {{"instrument_name", instrument_name}, {"amount", amount}, {"price", price}, {"type", type}}}};
 
     string payload_str = payload.dump();
 
@@ -40,7 +36,8 @@ string DeribitAPI::placeOrder(const string &instrument_name, const string &side,
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
 
-    if (res != CURLE_OK) {
+    if (res != CURLE_OK)
+    {
         cerr << "Failed to place order: " << curl_easy_strerror(res) << endl;
         return "";
     }
@@ -48,11 +45,13 @@ string DeribitAPI::placeOrder(const string &instrument_name, const string &side,
     return response;
 }
 
-string DeribitAPI::getOpenOrders() {
+string DeribitAPI::getOpenOrders()
+{
     CURL *curl = curl_easy_init();
-    if (!curl) return "";
+    if (!curl)
+        return "";
 
-    string url = base_url + "private/get_open_orders_by_currency?currency=BTC";
+    string url = base_url + "private/get_open_orders";
     string response;
 
     struct curl_slist *headers = nullptr;
@@ -67,16 +66,19 @@ string DeribitAPI::getOpenOrders() {
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
 
-    if (res != CURLE_OK) {
+    if (res != CURLE_OK)
+    {
         cerr << "Failed to fetch open orders: " << curl_easy_strerror(res) << endl;
         return "";
     }
     return response;
 }
 
-string DeribitAPI::cancelOrder(const string &order_id) {
+string DeribitAPI::cancelOrder(const string &order_id)
+{
     CURL *curl = curl_easy_init();
-    if (!curl) return "";
+    if (!curl)
+        return "";
 
     string url = base_url + "private/cancel";
     string response;
@@ -85,8 +87,7 @@ string DeribitAPI::cancelOrder(const string &order_id) {
         {"jsonrpc", "2.0"},
         {"id", 42},
         {"method", "private/cancel"},
-        {"params", {{"order_id", order_id}}}
-    };
+        {"params", {{"order_id", order_id}}}};
 
     string payload_str = payload.dump();
 
@@ -104,7 +105,8 @@ string DeribitAPI::cancelOrder(const string &order_id) {
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
 
-    if (res != CURLE_OK) {
+    if (res != CURLE_OK)
+    {
         cerr << "Failed to cancel order: " << curl_easy_strerror(res) << endl;
         return "";
     }
@@ -112,33 +114,39 @@ string DeribitAPI::cancelOrder(const string &order_id) {
     return response;
 }
 
-
-string DeribitAPI::modifyOrder(const string &order_id, double new_price, double new_amount) {
+string DeribitAPI::modifyOrder(const string &order_id, double new_price, double new_amount)
+{
     string cancel_response = cancelOrder(order_id);
 
-    try {
+    try
+    {
         auto jsonResponse = json::parse(cancel_response);
-        if (!jsonResponse.contains("result")) {
+        if (!jsonResponse.contains("result"))
+        {
             std::cerr << "Failed to cancel order for modification" << std::endl;
             return cancel_response;
         }
-        else{
+        else
+        {
             string instrument_name = jsonResponse["result"]["instrument_name"];
             string side = jsonResponse["result"]["direction"];
             string type = jsonResponse["result"]["order_type"];
             return placeOrder(instrument_name, side, new_amount, new_price, type);
         }
-    } catch (json::parse_error &e) {
+    }
+    catch (json::parse_error &e)
+    {
         std::cerr << "Error parsing cancel response: " << e.what() << std::endl;
         return cancel_response;
     }
     return "Error modifying order";
 }
 
-
-string DeribitAPI::getOrderBook(const string &symbol) {
+string DeribitAPI::getOrderBook(const string &symbol)
+{
     CURL *curl = curl_easy_init();
-    if (!curl) {
+    if (!curl)
+    {
         cerr << "Failed to initialize CURL." << endl;
         return "";
     }
@@ -153,7 +161,8 @@ string DeribitAPI::getOrderBook(const string &symbol) {
     CURLcode res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
 
-    if (res != CURLE_OK) {
+    if (res != CURLE_OK)
+    {
         cerr << "Failed to fetch order book: " << curl_easy_strerror(res) << endl;
         return "";
     }
