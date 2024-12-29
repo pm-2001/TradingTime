@@ -50,67 +50,6 @@ void reconnect_websocket(WebSocketClient &ws_client, websocketpp::connection_hdl
 
     cerr << "Failed to reconnect after " << max_reconnect_attempts << " attempts." << endl;
 }
-// void DeribitAPI::startWebSocket(const string &symbol) {
-//     try {
-//         WebSocketClient ws_client;
-//         ws_client.init_asio();
-
-//         // Add TLS initialization
-//         ws_client.set_tls_init_handler([](websocketpp::connection_hdl hdl) -> websocketpp::lib::shared_ptr<boost::asio::ssl::context> {
-//             auto ctx = websocketpp::lib::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv12);
-//             ctx->set_options(boost::asio::ssl::context::default_workarounds |
-//                              boost::asio::ssl::context::no_sslv2 |
-//                              boost::asio::ssl::context::no_sslv3 |
-//                              boost::asio::ssl::context::single_dh_use);
-//             return ctx;
-//         });
-
-//         ws_client.set_message_handler([this](websocketpp::connection_hdl, WebSocketClient::message_ptr msg) {
-//             string payload = msg->get_payload();
-//             auto jsonPayload = json::parse(payload);
-//             if(jsonPayload.contains("params") && jsonPayload["params"].contains("data")){
-//                 auto data = jsonPayload["params"]["data"];
-//                 cout<<"ASKS: "<<data["asks"]<<endl;
-//                 cout<<"BIDS: "<<data["bids"]<<endl;
-//                 cout<<"Instrument Name: "<<data["instrument_name"]<<endl;
-//                 cout<<"Change Id: "<<data["change_id"]<<endl;
-//                 cout<<"Timestamp: "<<data["timestamp"]<<endl<<endl;
-//             }
-//         });
-
-//         ws_client.set_close_handler([this, &ws_client](websocketpp::connection_hdl hdl) {
-//             cout << "WebSocket Disconnected. Attempting to reconnect..." << endl;
-//             reconnect_websocket(ws_client, hdl);
-//         });
-
-//         ws_client.set_open_handler([this, &ws_client, symbol](websocketpp::connection_hdl hdl) {
-//             cout << "WebSocket Connected!" << endl;
-
-//             string subscribe_msg = R"({
-//                 "jsonrpc": "2.0",
-//                 "id": 1,
-//                 "method": "public/subscribe",
-//                 "params": {
-//                     "channels": ["book.)" + symbol + R"(.none.10.100ms"]
-//                 }
-//             })";
-//             ws_client.send(hdl, subscribe_msg, websocketpp::frame::opcode::text);
-//         });
-
-//         // Establish Connection
-//         websocketpp::lib::error_code ec;
-//         WebSocketClient::connection_ptr con = ws_client.get_connection("wss://test.deribit.com/ws/api/v2", ec);
-//         if (ec) {
-//             cerr << "WebSocket Connection Error: " << ec.message() << endl;
-//             return;
-//         }
-
-//         ws_client.connect(con);
-//         ws_client.run();
-//     } catch (const exception &e) {
-//         cerr << "WebSocket Exception: " << e.what() << endl;
-//     }
-// }
 
 void DeribitAPI::startWebSocket(const std::vector<std::string> &symbols)
 {
