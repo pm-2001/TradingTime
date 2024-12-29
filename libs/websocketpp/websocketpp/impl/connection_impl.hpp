@@ -1837,47 +1837,47 @@ void connection<config>::write_frame() {
     }
 
     // Print detailed send stats if those log levels are enabled
-    if (m_alog->static_test(log::alevel::frame_header)) {
-    if (m_alog->dynamic_test(log::alevel::frame_header)) {
-        std::stringstream general,header,payload;
+    // if (m_alog->static_test(log::alevel::frame_header)) {
+    // if (m_alog->dynamic_test(log::alevel::frame_header)) {
+    //     std::stringstream general,header,payload;
         
-        general << "Dispatching write containing " << m_current_msgs.size()
-                <<" message(s) containing ";
-        header << "Header Bytes: \n";
-        payload << "Payload Bytes: \n";
+    //     general << "Dispatching write containing " << m_current_msgs.size()
+    //             <<" message(s) containing ";
+    //     header << "Header Bytes: \n";
+    //     payload << "Payload Bytes: \n";
         
-        size_t hbytes = 0;
-        size_t pbytes = 0;
+    //     size_t hbytes = 0;
+    //     size_t pbytes = 0;
         
-        for (size_t i = 0; i < m_current_msgs.size(); i++) {
-            hbytes += m_current_msgs[i]->get_header().size();
-            pbytes += m_current_msgs[i]->get_payload().size();
+    //     for (size_t i = 0; i < m_current_msgs.size(); i++) {
+    //         hbytes += m_current_msgs[i]->get_header().size();
+    //         pbytes += m_current_msgs[i]->get_payload().size();
 
             
-            header << "[" << i << "] (" 
-                   << m_current_msgs[i]->get_header().size() << ") " 
-                   << utility::to_hex(m_current_msgs[i]->get_header()) << "\n";
+    //         header << "[" << i << "] (" 
+    //                << m_current_msgs[i]->get_header().size() << ") " 
+    //                << utility::to_hex(m_current_msgs[i]->get_header()) << "\n";
 
-            if (m_alog->static_test(log::alevel::frame_payload)) {
-            if (m_alog->dynamic_test(log::alevel::frame_payload)) {
-                payload << "[" << i << "] (" 
-                        << m_current_msgs[i]->get_payload().size() << ") ["<<m_current_msgs[i]->get_opcode()<<"] "
-                        << (m_current_msgs[i]->get_opcode() == frame::opcode::text ? 
-                                m_current_msgs[i]->get_payload() : 
-                                utility::to_hex(m_current_msgs[i]->get_payload())
-                           ) 
-                        << "\n";
-            }
-            }  
-        }
+    //         if (m_alog->static_test(log::alevel::frame_payload)) {
+    //         if (m_alog->dynamic_test(log::alevel::frame_payload)) {
+    //             payload << "[" << i << "] (" 
+    //                     << m_current_msgs[i]->get_payload().size() << ") ["<<m_current_msgs[i]->get_opcode()<<"] "
+    //                     << (m_current_msgs[i]->get_opcode() == frame::opcode::text ? 
+    //                             m_current_msgs[i]->get_payload() : 
+    //                             utility::to_hex(m_current_msgs[i]->get_payload())
+    //                        ) 
+    //                     << "\n";
+    //         }
+    //         }  
+    //     }
         
-        general << hbytes << " header bytes and " << pbytes << " payload bytes";
+    //     general << hbytes << " header bytes and " << pbytes << " payload bytes";
         
-        m_alog->write(log::alevel::frame_header,general.str());
-        m_alog->write(log::alevel::frame_header,header.str());
-        m_alog->write(log::alevel::frame_payload,payload.str());
-    }
-    }
+    //     m_alog->write(log::alevel::frame_header,general.str());
+    //     m_alog->write(log::alevel::frame_header,header.str());
+    //     m_alog->write(log::alevel::frame_payload,payload.str());
+    // }
+    // }
 
     transport_con_type::async_write(
         m_send_buffer,

@@ -12,21 +12,24 @@ typedef websocketpp::client<websocketpp::config::asio_tls_client> WebSocketClien
 using json = nlohmann::json;
 using namespace std;
 
-
-void reconnect_websocket(WebSocketClient &ws_client, websocketpp::connection_hdl hdl) {
+void reconnect_websocket(WebSocketClient &ws_client, websocketpp::connection_hdl hdl)
+{
     int reconnect_attempts = 0;
     const int max_reconnect_attempts = 5;
     const int reconnect_delay_ms = 3000; // 3 seconds
 
-    while (reconnect_attempts < max_reconnect_attempts) {
-        try {
+    while (reconnect_attempts < max_reconnect_attempts)
+    {
+        try
+        {
             cout << "Reconnect attempt " << reconnect_attempts + 1 << "..." << endl;
-            
+
             // Reinitialize connection
             websocketpp::lib::error_code ec;
             WebSocketClient::connection_ptr con = ws_client.get_connection("wss://test.deribit.com/ws/api/v2", ec);
-            if (ec) {
-                cerr << "WebSocket Connection Error: " << ec.message() << endl;
+            if (ec)
+            {
+                cerr << " Error: " << ec.message() << endl;
                 reconnect_attempts++;
                 std::this_thread::sleep_for(std::chrono::milliseconds(reconnect_delay_ms));
                 continue;
@@ -35,7 +38,9 @@ void reconnect_websocket(WebSocketClient &ws_client, websocketpp::connection_hdl
             ws_client.connect(con);
             cout << "Reconnected successfully!" << endl;
             return; // Exit the function upon successful reconnection
-        } catch (const exception &e) {
+        }
+        catch (const exception &e)
+        {
             cerr << "WebSocket Reconnection Exception: " << e.what() << endl;
         }
 
@@ -107,21 +112,24 @@ void reconnect_websocket(WebSocketClient &ws_client, websocketpp::connection_hdl
 //     }
 // }
 
-
-
-
-void DeribitAPI::startWebSocket(const std::vector<std::string> &symbols) {
-    try {
+void DeribitAPI::startWebSocket(const std::vector<std::string> &symbols)
+{
+    try
+    {
         WebSocketClient ws_client;
         ws_client.init_asio();
 
-        ws_client.set_tls_init_handler([](websocketpp::connection_hdl hdl) -> websocketpp::lib::shared_ptr<boost::asio::ssl::context> {
+        ws_client.set_tls_init_handler([](websocketpp::connection_hdl hdl) -> websocketpp::lib::shared_ptr<boost::asio::ssl::context>
+                                       {
             auto ctx = websocketpp::lib::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv12);
-            ctx->set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::no_sslv2 | boost::asio::ssl::context::no_sslv3 | boost::asio::ssl::context::single_dh_use);
-            return ctx;
-        });
+            ctx->set_options(boost::asio::ssl::context::default_workarounds |
+                             boost::asio::ssl::context::no_sslv2 |
+                             boost::asio::ssl::context::no_sslv3 |
+                             boost::asio::ssl::context::single_dh_use);
+            return ctx; });
 
-        ws_client.set_message_handler([this](websocketpp::connection_hdl, WebSocketClient::message_ptr msg) {
+        ws_client.set_message_handler([this](websocketpp::connection_hdl, WebSocketClient::message_ptr msg)
+                                      {
             string payload = msg->get_payload();
             auto jsonPayload = json::parse(payload);
             if(jsonPayload.contains("params") && jsonPayload["params"].contains("data") && jsonPayload["params"]["data"].contains("change_id")){
@@ -131,11 +139,11 @@ void DeribitAPI::startWebSocket(const std::vector<std::string> &symbols) {
                 cout<<"Instrument Name: "<<data["instrument_name"]<<endl;
                 cout<<"Change Id: "<<data["change_id"]<<endl;
                 cout<<"Timestamp: "<<data["timestamp"]<<endl<<endl;
-            }
-        });
+            } });
 
-        ws_client.set_open_handler([this, &ws_client, symbols](websocketpp::connection_hdl hdl) {
-            std::cout << "WebSocket Connected!" << std::endl;
+        ws_client.set_open_handler([this, &ws_client, symbols](websocketpp::connection_hdl hdl)
+                                   {
+            // std::cout << "WebSocket Connected!" << std::endl;
 
             // Subscribe to all specified channels
             for (const auto &symbol : symbols) {
@@ -155,51 +163,54 @@ void DeribitAPI::startWebSocket(const std::vector<std::string> &symbols) {
                         }
                     })";
                     ws_client.send(hdl, subscribe_msg, websocketpp::frame::opcode::text);
-                    std::cout << "Subscribed to channel: " << channel << std::endl;
+                    // std::cout << "Subscribed to channel: " << channel << std::endl;
                 }
-            }
-        });
+            } });
 
         // Establish Connection
         websocketpp::lib::error_code ec;
         WebSocketClient::connection_ptr con = ws_client.get_connection("wss://test.deribit.com/ws/api/v2", ec);
-        if (ec) {
+        if (ec)
+        {
             std::cerr << "WebSocket Connection Error: " << ec.message() << std::endl;
             return;
         }
 
         ws_client.connect(con);
         ws_client.run();
-    } catch (const std::exception &e) {
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << "WebSocket Exception: " << e.what() << std::endl;
     }
 }
 
-
-void subscribeToChannel(WebSocketClient &ws_client, websocketpp::connection_hdl hdl, const std::string &channel) {
+void subscribeToChannel(WebSocketClient &ws_client, websocketpp::connection_hdl hdl, const std::string &channel)
+{
     std::string subscribe_msg = R"({
         "jsonrpc": "2.0",
         "id": 1,
         "method": "public/subscribe",
         "params": {
-            "channels": [")" + channel + R"("]
+            "channels": [")" + channel +
+                                R"("]
         }
     })";
     ws_client.send(hdl, subscribe_msg, websocketpp::frame::opcode::text);
-    std::cout << "Subscribed to channel: " << channel << std::endl;
+    // std::cout << "Subscribed to channel: " << channel << std::endl;
 }
 
-
-void unsubscribeFromChannel(WebSocketClient &ws_client, websocketpp::connection_hdl hdl, const std::string &channel) {
+void unsubscribeFromChannel(WebSocketClient &ws_client, websocketpp::connection_hdl hdl, const std::string &channel)
+{
     std::string unsubscribe_msg = R"({
         "jsonrpc": "2.0",
         "id": 1,
         "method": "public/unsubscribe",
         "params": {
-            "channels": [")" + channel + R"("]
+            "channels": [")" + channel +
+                                  R"("]
         }
     })";
     ws_client.send(hdl, unsubscribe_msg, websocketpp::frame::opcode::text);
-    std::cout << "Unsubscribed from channel: " << channel << std::endl;
+    // std::cout << "Unsubscribed from channel: " << channel << std::endl;
 }
-

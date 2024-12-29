@@ -160,8 +160,8 @@ private:
             endpoint_type::m_elog->write(log::elevel::rerror,
                     "handle_connect error: "+ec.message());
         } else {
-            endpoint_type::m_alog->write(log::alevel::connect,
-                "Successful connection");
+            // endpoint_type::m_alog->write(log::alevel::connect,
+            //     "Successful connection");
 
             con->start();
         }
