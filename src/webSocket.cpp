@@ -117,10 +117,7 @@ void DeribitAPI::startWebSocket(const std::vector<std::string> &symbols) {
 
         ws_client.set_tls_init_handler([](websocketpp::connection_hdl hdl) -> websocketpp::lib::shared_ptr<boost::asio::ssl::context> {
             auto ctx = websocketpp::lib::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv12);
-            ctx->set_options(boost::asio::ssl::context::default_workarounds |
-                             boost::asio::ssl::context::no_sslv2 |
-                             boost::asio::ssl::context::no_sslv3 |
-                             boost::asio::ssl::context::single_dh_use);
+            ctx->set_options(boost::asio::ssl::context::default_workarounds | boost::asio::ssl::context::no_sslv2 | boost::asio::ssl::context::no_sslv3 | boost::asio::ssl::context::single_dh_use);
             return ctx;
         });
 
@@ -143,9 +140,9 @@ void DeribitAPI::startWebSocket(const std::vector<std::string> &symbols) {
             // Subscribe to all specified channels
             for (const auto &symbol : symbols) {
                 std::vector<std::string> channels = {
-                    "book." + symbol + ".none.10.100ms",  // Order book
-                    "trades." + symbol + ".raw",         // Trades
-                    "ticker." + symbol + ".100ms"        // Ticker
+                    "book." + symbol + ".none.10.100ms",
+                    "trades." + symbol + ".raw",
+                    "ticker." + symbol + ".100ms"
                 };
 
                 for (const auto &channel : channels) {

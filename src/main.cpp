@@ -163,13 +163,8 @@ void handleAccountSummary(DeribitAPI &api)
         cout<<"\t|"<<setw(14)<<setfill(' ')<<left<<"Currency"<<"|"<<setw(14)<<left<<"Balance"<<"|"<<setw(14)<<left<<"Equity"<<"|"<<setw(19)<<left<<"Available Funds"<<"|"<<endl;
         cout<<"\t+"<<setw(14)<<setfill('-')<<"-"<<"+"<<setw(14)<<"-"<<"+"<<setw(14)<<"-"<<"+"<<setw(19)<<"-"<<"+"<<endl;
 
-        // Table Content
         cout<<"\t|"<<setw(14)<<setfill(' ')<<left<<currency<<"|"<<setw(14)<<left<<balance<<"|"<<setw(14)<<left<<equity<<"|"<<setw(19)<<left<<available_funds<<"|"<<endl;
-
-        cout << "\t+" << setw(14) << setfill('-') << "-"
-         << "+" << setw(14) << "-"
-         << "+" << setw(14) << "-"
-         << "+" << setw(19) << "-" << "+" << endl;
+        cout << "\t+" << setw(14) << setfill('-') << "-"<< "+" << setw(14) << "-"<< "+" << setw(14) << "-"<< "+" << setw(19) << "-" << "+" << endl;
     }
     cout<<string(85,'-')<<endl;
 }
@@ -177,34 +172,136 @@ void handleAccountSummary(DeribitAPI &api)
 void handleMarketData(DeribitAPI &api)
 {
     string choice, symbol, currency, kind;
-
-    cout << "1. Order Book\n2. Ticker\n3. Instruments\nChoose Market Data Type: ";
+    cout<<string(56,'-')<<"MARKET DATA"<<string(56,'-')<<endl;
+    cout << "\t1. Order Book\n\t2. Ticker\n\t3. Instruments\n\tChoose Market Data Type: ";
     cin >> choice;
-
+    string header = choice == "1" ? "ORDER BOOK" : choice == "2" ? "TICKER" : "INSTRUMENTS";
+    cout<<string(53,'-')<<header<<string(53,'-')<<endl;
     if (choice == "1")
     {
-        cout << "Enter Symbol (e.g., BTC-PERPETUAL): ";
+        cout << "\t\tEnter Symbol (e.g., BTC-PERPETUAL): ";
         cin >> symbol;
-        cout << "Order Book: " << api.getOrderBook(symbol) << endl;
+        string orderBook = api.getOrderBook(symbol);
+        if (orderBook.empty())
+        {
+            cerr << "Failed to fetch order book." << endl;
+            return;
+        }
+        auto jsonResponseOrderBook = json::parse(orderBook);
+        if (jsonResponseOrderBook.contains("result"))
+        {
+            auto result = jsonResponseOrderBook["result"];
+            string instrumentName = result["instrument_name"];
+            double bestBidAmount = result["best_bid_amount"];
+            double bestAskPrice = result["best_ask_price"];
+            double bestAskAmount = result["best_ask_amount"];
+            double lastPrice = result["last_price"];
+            double indexPrice = result["index_price"];
+            auto bids = result["bids"];
+            auto asks = result["asks"];
+            
+            cout << fixed << setprecision(2);
+            cout << "\t\tInstrument: " <<instrumentName<< endl;
+            cout << "\t\tLast Price: " << lastPrice << endl;
+            cout << "\t\tIndex Price: " << indexPrice << endl;
+            cout << "\t\tBest Bid: " <<result["best_bid_price"]<< " (" << bestBidAmount << ")" << endl;
+            cout << "\t\tBest Ask: " << bestAskPrice << " (" << bestAskAmount << ")" << endl;
+            cout << "\n\t\tOrder Book Depth (Top 5):\n";
+            cout <<"\t\t"<<setw(15)<<setfill(' ')<< "Bids" << setw(15) << "Amount" << "   |   " << setw(15) << "Asks" << setw(15) << "Amount" << endl;
+            for (size_t i = 0; i < 5; ++i) {
+                double bidPrice = bids[i][0];
+                double bidAmount = bids[i][1];
+                double askPrice = asks[i][0];
+                double askAmount = asks[i][1];
+                cout <<"\t\t"<< setw(15)<<setfill(' ')<< bidPrice << setw(15) << bidAmount << "   |   " << setw(15) << askPrice << setw(15) << askAmount << endl;
+            }
+        }
     }
     else if (choice == "2")
     {
-        cout << "Enter Symbol (e.g., BTC-PERPETUAL): ";
+        cout << "\t\tEnter Symbol (e.g., BTC-PERPETUAL): ";
         cin >> symbol;
-        cout << "Ticker: " << api.getTicker(symbol) << endl;
+        string ticker = api.getTicker(symbol);
+        if (ticker.empty())
+        {
+            cerr << "Failed to fetch ticker." << endl;
+            return;
+        }
+        auto jsonResponseTicker = json::parse(ticker);
+        if (jsonResponseTicker.contains("result"))
+        {
+            auto result = jsonResponseTicker["result"];
+            string instrumentName = result["instrument_name"];
+            double lastPrice = result["last_price"];
+            double indexPrice = result["index_price"];
+            double markPrice = result["mark_price"];
+            double highPrice = result["stats"]["high"];
+            double lowPrice = result["stats"]["low"];
+            double priceChange = result["stats"]["price_change"];
+            double volume = result["stats"]["volume"];
+            double volumeUSD = result["stats"]["volume_usd"];
+            double bestAskPrice = result["best_ask_price"];
+            double bestAskAmount = result["best_ask_amount"];
+            double bestBidPrice = result["best_bid_price"];
+            double bestBidAmount = result["best_bid_amount"];
+            double openInterest = result["open_interest"];
+            double currentFunding = result["current_funding"];
+            double funding8h = result["funding_8h"];
+
+            // Display the information
+            cout << fixed << setprecision(2);
+            cout << "\t\tInstrument: " << instrumentName << endl;
+            cout << "\t\tLast Price: " << lastPrice << endl;
+            cout << "\t\tIndex Price: " << indexPrice << endl;
+            cout << "\t\tMark Price: " << markPrice << endl;
+            cout << "\t\t24H High: " << highPrice << "   24H Low: " << lowPrice << endl;
+            cout << "\t\tPrice Change (24H): " << priceChange * 100 << "%" << endl;
+            cout << "\t\tVolume (Contracts): " << volume << "   Volume (USD): $" << volumeUSD << endl;
+            cout << "\t\tBest Ask: " << bestAskPrice << " (" << bestAskAmount << ")" << endl;
+            cout << "\t\tBest Bid: " << bestBidPrice << " (" << bestBidAmount << ")" << endl;
+            cout << "\t\tOpen Interest: " << openInterest << endl;
+            cout << "\t\tCurrent Funding Rate: " << currentFunding * 100 << "%" << endl;
+            cout << "\t\tFunding (8H): " << funding8h * 100 << "%" << endl;
+        }
     }
     else if (choice == "3")
     {
-        cout << "Enter Currency (e.g., BTC): ";
+        cout << "\t\tEnter Currency (e.g., BTC): ";
         cin >> currency;
-        cout << "Enter Kind (default: future): ";
+        cout << "\t\tEnter Kind (default: future): ";
         cin >> kind;
-        cout << "Instruments: " << api.getInstruments(currency, kind) << endl;
+        string instruments = api.getInstruments(currency, kind);
+        if (instruments.empty())
+        {
+            cerr << "Failed to fetch instruments." << endl;
+            return;
+        }
+        auto jsonResponseInstruments = json::parse(instruments);
+        if (jsonResponseInstruments.contains("result"))
+        {
+            auto result = jsonResponseInstruments["result"];
+            cout<<"+"<<setw(20)<<setfill('-')<<"-"<<"+"<<setw(20)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<endl;
+            cout<<"|"<<left<<setw(20)<<setfill(' ') << "INSTRUMENT NAME"<<"|"<<setw(20) << "EXPIRATION TIME"<<"|"<<setw(15) << "CONTRACT SIZE"<<"|"<<setw(15) << "MAKER FEE"<<"|"<<setw(15) << "TAKER FEE"<<"|"<<setw(15) << "MIN TRADE"<<"|"<<setw(15) << "TICK SIZE"<<"|"<<endl;
+            cout<<"+"<<setw(20)<<setfill('-')<<"-"<<"+"<<setw(20)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<endl;
+
+            for (const auto& instrument : result) {
+            string inst_name = instrument["instrument_name"];
+            long long exp_timestamp = instrument["expiration_timestamp"];
+            double contract_size = instrument["contract_size"];
+            double maker_commission = instrument["maker_commission"];
+            double taker_commission = instrument["taker_commission"];
+            double min_trade_amt = instrument["min_trade_amount"];
+            double tick_size = instrument["tick_size"];
+            cout<<"|"<<left<<setw(20)<<setfill(' ') << inst_name<<"|"<<setw(20) << exp_timestamp<<"|"<<setw(15) <<contract_size<<"|"<<setw(15) <<maker_commission<<"|"<<setw(15) <<taker_commission<<"|"<<setw(15) <<min_trade_amt<<"|"<<setw(15) <<tick_size<<"|"<<endl;
+            cout<<"+"<<setw(20)<<setfill('-')<<"-"<<"+"<<setw(20)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<setw(15)<<"-"<<"+"<<endl;
+            }
+        }
     }
     else
     {
-        cout << "Invalid choice." << endl;
+        cout << "\t\tInvalid choice." << endl;
     }
+    cout<<string(123,'-')<<endl;
 }
 
 void handleWebSocket(DeribitAPI &api)
