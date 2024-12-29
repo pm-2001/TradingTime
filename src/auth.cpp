@@ -48,7 +48,7 @@ bool DeribitAPI::authenticate() {
         auto jsonResponse = json::parse(response);
         if (jsonResponse.contains("result") && jsonResponse["result"].contains("access_token")) {
             access_token = jsonResponse["result"]["access_token"];
-            cout<<"Access Token: "<<access_token<<endl;
+            // cout<<"Access Token: "<<access_token<<endl;
         } else {
             cerr << "Authentication response missing 'access_token'" << endl;
             return false;

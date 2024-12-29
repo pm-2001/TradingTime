@@ -59,7 +59,7 @@ void handlePlaceOrder(DeribitAPI &api)
 void handleOpenOrder(DeribitAPI &api)
 {
     string openOrders = api.getOpenOrders();
-    cout << "---------------------------------------OPEN ORDERS---------------------------------------" << endl;
+    cout<<string(40,'-')<<"OPEN ORDERS"<<string(40,'-')<<endl<<endl;
     if (openOrders.empty())
         cerr << "Failed to fetch open orders." << endl;
     else
@@ -67,26 +67,27 @@ void handleOpenOrder(DeribitAPI &api)
         auto jsonResponse = json::parse(openOrders);
         if (jsonResponse.contains("result"))
         {
-            cout << left << setw(15) << "Order ID" << left << setw(20) << "Instrument Name" << left << setw(15) << "Amount" << left << setw(15) << "Price" << left << setw(10) << "Type" << endl;
-            cout << string(75, '-') << endl;
+            cout << left << setw(24) <<setfill(' ') << "ORDER ID" << left << setw(24) << "INSTRUMENT NAME" << left << setw(15) << "AMOUNT" << left << setw(15) << "PRICE" << left << setw(10) << "TYPE" << endl;
+            cout << string(91, '-') << endl;
 
             auto result = jsonResponse["result"];
             for (const auto &order : result)
             {
-                cout << left << setw(15) << order["order_id"]
-                     << left << setw(20) << order["instrument_name"]
-                     << left << setw(15) << order["amount"]
-                     << left << setw(15) << order["price"]
-                     << left << setw(10) << order["order_type"] << endl;
+                string orderId = order["order_id"];
+                string instrumentName = order["instrument_name"];
+                double amount = order["amount"];
+                double price = order["price"];
+                string type = order["order_type"];
+                cout<<left<<setw(24)<<setfill(' ') <<orderId<<left<<setw(24)<<instrumentName<<left<<setw(15)<<amount<<left<<setw(15)<<price<<left<<setw(10)<<type<<endl;
             }
         }
     }
-    cout << "----------------------------------------------------------------------------------------" << endl;
+    cout<<string(91,'-')<<endl;
 }
 
 void handleCancelOrder(DeribitAPI &api)
 {
-    cout << "---------------------------------------CANCEL ORDER---------------------------------------" << endl;
+    cout<<string(40,'-')<<"CANCEL ORDER"<<string(40,'-')<<endl;
     string orderId;
     cout << "\tEnter Order ID to cancel: ";
     cin >> orderId;
@@ -104,14 +105,14 @@ void handleCancelOrder(DeribitAPI &api)
     }
     else
         cerr << "\tInvalid JSON response or missing 'order_state' field." << endl;
-    cout << "----------------------------------------------------------------------------------------" << endl;
+    cout<<string(91,'-')<<endl;
 }
 
 void handleModifyOrder(DeribitAPI &api)
 {
     string orderId;
     double newPrice, newAmount;
-    cout<< "---------------------------------------MODIFY ORDER---------------------------------------" << endl;
+    cout<<string(40,'-')<<"MODIFY ORDER"<<string(40,'-')<<endl;
     cout << "\tEnter Order ID to modify: ";
     cin >> orderId;
     cout << "\tEnter New Price: ";
@@ -134,7 +135,7 @@ void handleModifyOrder(DeribitAPI &api)
              << "Message: " << jsonResponse["error"]["message"] << endl;
     else
         cerr << "\tInvalid JSON response or missing 'order_state' field." << endl;
-    cout << "----------------------------------------------------------------------------------------" << endl;
+    cout<<string(91,'-')<<endl;
 }
 
 void handleAccountSummary(DeribitAPI &api)
@@ -144,8 +145,7 @@ void handleAccountSummary(DeribitAPI &api)
     cin >> currency;
 
     string accountSummary = api.getAccountSummary(currency);
-    cout<<accountSummary<<endl;
-    cout<< "---------------------------------------ACCOUNT SUMMARY---------------------------------------" << endl;
+    cout<<string(35,'-')<<"ACCOUNT SUMMARY"<<string(35,'-')<<endl;
     if (accountSummary.empty())
     {
         cerr << "Failed to fetch account summary." << endl;
@@ -155,34 +155,23 @@ void handleAccountSummary(DeribitAPI &api)
     if (jsonResponseAccountSummary.contains("result"))
     {
         auto result = jsonResponseAccountSummary["result"];
-        cout << "+" << setw(15) << setfill('-') << "-"
-         << "+" << setw(15) << "-"
-         << "+" << setw(15) << "-"
-         << "+" << setw(20) << "-" << "+" << endl;
+        string currency = result["currency"];
+        double balance = result["balance"];
+        double equity = result["equity"];
+        double available_funds = result["available_funds"];
+        cout<<"\t+"<<setw(14)<<setfill('-')<<"-"<<"+"<<setw(14)<<"-"<<"+"<<setw(14)<<"-"<<"+"<<setw(19)<<"-"<<"+"<<endl;
+        cout<<"\t|"<<setw(14)<<setfill(' ')<<left<<"Currency"<<"|"<<setw(14)<<left<<"Balance"<<"|"<<setw(14)<<left<<"Equity"<<"|"<<setw(19)<<left<<"Available Funds"<<"|"<<endl;
+        cout<<"\t+"<<setw(14)<<setfill('-')<<"-"<<"+"<<setw(14)<<"-"<<"+"<<setw(14)<<"-"<<"+"<<setw(19)<<"-"<<"+"<<endl;
 
-    cout << "|" << setw(14) << setfill(' ') << left << "Currency"
-         << "|" << setw(14) << left << "Balance"
-         << "|" << setw(14) << left << "Equity"
-         << "|" << setw(19) << left << "Available Funds" << "|" << endl;
+        // Table Content
+        cout<<"\t|"<<setw(14)<<setfill(' ')<<left<<currency<<"|"<<setw(14)<<left<<balance<<"|"<<setw(14)<<left<<equity<<"|"<<setw(19)<<left<<available_funds<<"|"<<endl;
 
-    cout << "+" << setw(15) << setfill('-') << "-"
-         << "+" << setw(15) << "-"
-         << "+" << setw(15) << "-"
-         << "+" << setw(20) << "-" << "+" << endl;
-
-    // Table Content
-    int cl = 20 - result["balance"].size();
-    cout << "|" << setw(18) << setfill(' ') << left << result["currency"]
-         << "|" << setw(cl) << left << result["balance"]
-         << "|" << setw(14) << left << result["equity"]
-         << "|" << setw(19) << left << result["available_funds"] << "|" << endl;
-
-    cout << "+" << setw(15) << setfill('-') << "-"
-         << "+" << setw(15) << "-"
-         << "+" << setw(15) << "-"
-         << "+" << setw(20) << "-" << "+" << endl;
+        cout << "\t+" << setw(14) << setfill('-') << "-"
+         << "+" << setw(14) << "-"
+         << "+" << setw(14) << "-"
+         << "+" << setw(19) << "-" << "+" << endl;
     }
-    cout << "----------------------------------------------------------------------------------------" << endl;
+    cout<<string(85,'-')<<endl;
 }
 
 void handleMarketData(DeribitAPI &api)
