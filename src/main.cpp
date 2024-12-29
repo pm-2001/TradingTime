@@ -67,7 +67,7 @@ void handleOpenOrder(DeribitAPI &api)
         auto jsonResponse = json::parse(openOrders);
         if (jsonResponse.contains("result"))
         {
-            cout << left << setw(26) <<setfill(' ') << "Order ID" << left << setw(20) << "Instrument Name" << left << setw(15) << "Amount" << left << setw(15) << "Price" << left << setw(10) << "Type" << endl;
+            cout << left << setw(24) <<setfill(' ') << "ORDER ID" << left << setw(24) << "INSTRUMENT NAME" << left << setw(15) << "AMOUNT" << left << setw(15) << "PRICE" << left << setw(10) << "TYPE" << endl;
             cout << string(91, '-') << endl;
 
             auto result = jsonResponse["result"];
@@ -77,7 +77,8 @@ void handleOpenOrder(DeribitAPI &api)
                 string instrumentName = order["instrument_name"];
                 double amount = order["amount"];
                 double price = order["price"];
-                cout<<left<<setw(26)<<setfill(' ') <<orderId<<left<<setw(20)<<instrumentName<<left<<setw(15)<<amount<<left<<setw(15)<<price<<left<<setw(10)<<order["order_type"]<<endl;
+                string type = order["order_type"];
+                cout<<left<<setw(24)<<setfill(' ') <<orderId<<left<<setw(24)<<instrumentName<<left<<setw(15)<<amount<<left<<setw(15)<<price<<left<<setw(10)<<type<<endl;
             }
         }
     }
